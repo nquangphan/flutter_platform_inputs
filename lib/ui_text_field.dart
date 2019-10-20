@@ -127,7 +127,23 @@ class _UiTextFieldState extends State<UiTextField> {
   @override
   void initState() {
     super.initState();
+    
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: 31, maxHeight: 31),
+      child: UiKitView(
+          viewType: "dev.gilder.tom/uitextfield",
+          creationParamsCodec: const StandardMessageCodec(),
+          creationParams: _buildCreationParams(),
+          onPlatformViewCreated: _createMethodChannel),
+    );
+  }
+
+  void _createMethodChannel(int nativeViewId) {
+    _channel = MethodChannel("dev.gilder.tom/uitextfield_$nativeViewId")..setMethodCallHandler(_onMethodCall);
     if (widget.focusNode != null) {
       // TODO: remove listener
       // TODO: handle didUpdateWidget
@@ -145,22 +161,6 @@ class _UiTextFieldState extends State<UiTextField> {
         _channel.invokeMethod("setText", {"text": widget.controller.text ?? ""});
       });
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(minHeight: 31, maxHeight: 31),
-      child: UiKitView(
-          viewType: "dev.gilder.tom/uitextfield",
-          creationParamsCodec: const StandardMessageCodec(),
-          creationParams: _buildCreationParams(),
-          onPlatformViewCreated: _createMethodChannel),
-    );
-  }
-
-  void _createMethodChannel(int nativeViewId) {
-    _channel = MethodChannel("dev.gilder.tom/uitextfield_$nativeViewId")..setMethodCallHandler(_onMethodCall);
   }
 
   Map<String, dynamic> _buildCreationParams() {
